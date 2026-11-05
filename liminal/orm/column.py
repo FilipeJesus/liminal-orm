@@ -36,6 +36,8 @@ class Column(SqlColumn):
         The unit of the field. Searches for the unit warehouse name in the Unit Dictionary.
     decimal_places : int | None = None
         The number of decimal places for the field. Must be (0-15).
+    is_snapshot : bool = False
+        Whether the field is a snapshot (derived) field on a results schema. Snapshot fields are created in the Benchling UI.
     _warehouse_name : str | None = None
         The warehouse name of the column. Necessary when the variable name is not the same as the warehouse name.
     _archived : bool = False
@@ -54,6 +56,7 @@ class Column(SqlColumn):
         entity_link: str | None = None,
         unit_name: str | None = None,
         decimal_places: int | None = None,
+        is_snapshot: bool = False,
         _warehouse_name: str | None = None,
         _archived: bool = False,
         **kwargs: Any,
@@ -73,6 +76,8 @@ class Column(SqlColumn):
             unit_name=unit_name,
             decimal_places=decimal_places,
         )
+        if is_snapshot:
+            field_props["is_snapshot"] = True
         for f in BaseFieldProperties.unsupported_field_properties(
             type, entity_link is not None
         ):

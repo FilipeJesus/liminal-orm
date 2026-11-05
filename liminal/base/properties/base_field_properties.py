@@ -33,6 +33,9 @@ class BaseFieldProperties(BaseModel):
         If a string gets passed in, it gets converted to the entity schema class.
     tooltip : str | None
         The tooltip text for the field.
+    is_snapshot : bool | None
+        Whether the field is a snapshot (derived) field, which takes its value from a linked item.
+        Only set (True) for snapshot fields, which Benchling's schema API cannot create or update.
     _archived : bool | None
         Whether the field is archived in Benchling.
     """
@@ -48,6 +51,7 @@ class BaseFieldProperties(BaseModel):
     tooltip: str | None = None
     decimal_places: int | None = None
     unit_name: str | None = None
+    is_snapshot: bool | None = None
     _archived: bool | None = PrivateAttr(default=None)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)

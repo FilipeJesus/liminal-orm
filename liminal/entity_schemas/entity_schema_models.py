@@ -80,6 +80,7 @@ class EntitySchemaFieldModel(BaseModel):
     numericMax: float | None = None
     displayPrecision: int | None = None
     unit: UnitModel | None = None
+    legalTextDropdown: FieldLinkDefinitionModel | None = None
 
     def update_from_props(
         self,
@@ -205,6 +206,7 @@ class EntitySchemaFieldInputModel(BaseModel):
     numericMin: float | None = None
     numericMax: float | None = None
     displayPrecision: int | None = None
+    legalTextDropdownId: str | None = None
 
     @model_serializer(mode="wrap")
     def _serialize(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
@@ -258,6 +260,10 @@ class EntitySchemaFieldInputModel(BaseModel):
             numericMax=field.numericMax if is_numeric else None,
             displayPrecision=field.displayPrecision
             if field_type.supports_display_precision()
+            else None,
+            # Kept so that resubmitting the field list does not clear it.
+            legalTextDropdownId=field.legalTextDropdown.id
+            if field.legalTextDropdown
             else None,
         )
 

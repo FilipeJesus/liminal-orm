@@ -12,8 +12,10 @@ from sqlalchemy.orm import Query, RelationshipProperty, Session, relationship
 from sqlalchemy.orm.decl_api import declared_attr
 
 from liminal.base.base_validation_filters import BaseValidatorFilters
+from liminal.base.properties.base_field_properties import BaseFieldProperties
 from liminal.connection.benchling_service import BenchlingService
 from liminal.orm.base import Base
+from liminal.orm.column import Column
 from liminal.orm.base_tables.user import User
 from liminal.orm.results_schema_properties import ResultsSchemaProperties
 from liminal.results_schemas.utils import get_benchling_results_schemas
@@ -53,6 +55,43 @@ class BaseResultsModel(Generic[T], Base):
         super().__init_subclass__(**kwargs)
         warehouse_name = cls.__schema_properties__.warehouse_name
         cls.__tablename__ = warehouse_name + "$raw"
+
+    @classmethod
+    def get_all_subclasses(
+        cls, names: set[str] | None = None
+    ) -> list[type[BaseResultsModel]]:
+        """Returns all subclasses of this class, optionally only those with the given class or warehouse names."""
+        all_subclasses: list[type[BaseResultsModel]] = cls.__subclasses__()
+        if names is None:
+            return all_subclasses
+        models = {
+            name: subclass
+            for subclass in all_subclasses
+            for name in names
+            if name
+            in (subclass.__name__, subclass.__schema_properties__.warehouse_name)
+        }
+        if len(models.keys()) != len(set(names)):
+            missing_models = set(names) - set(models.keys())
+            raise ValueError(
+                f"No model subclass found for the following class names or warehouse names: {', '.join(missing_models)}. Please ensure the results schema model(s) are imported or defined."
+            )
+        return list(models.values())
+
+    @classmethod
+    def get_columns_dict(cls, exclude_archived: bool = True) -> dict[str, Column]:
+        """Returns the Benchling field columns of the class, in definition order, keyed by warehouse name.
+        Base columns are not Benchling fields, so they are never included."""
+        columns = [
+            c
+            for c in cls.__table__.columns
+            if isinstance(c.info.get("benchling_properties"), BaseFieldProperties)
+        ]
+        if exclude_archived:
+            columns = [
+                c for c in columns if not c.info["benchling_properties"]._archived
+            ]
+        return {c.name: c for c in columns}
 
     @classmethod
     def apply_base_filters(

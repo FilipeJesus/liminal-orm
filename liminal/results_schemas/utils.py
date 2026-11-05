@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Any
 
 from benchling_api_client.v2.stable.models.assay_result_schema import AssayResultSchema
 
@@ -49,7 +50,7 @@ def convert_result_schema_field_to_field_properties(
         else None
     )
 
-    return BaseFieldProperties(
+    field_props: dict[str, Any] = dict(
         name=field.name,
         type=field_type,
         required=field.isRequired,
@@ -62,15 +63,32 @@ def convert_result_schema_field_to_field_properties(
         unit_name=unit_id_to_name_map.get(unit_id) if unit_id else None,
         decimal_places=field.displayPrecision,
     )
+    if field.derivationType != "DIRECT":
+        field_props["is_snapshot"] = True
+    for f in BaseFieldProperties.unsupported_field_properties(
+        field_type, links_to_entity_schema
+    ):
+        field_props.pop(f, None)
+    return BaseFieldProperties(**field_props)
 
 
 def get_converted_results_schemas(
-    benchling_service: BenchlingService, include_archived: bool = False
+    benchling_service: BenchlingService,
+    include_archived: bool = False,
+    wh_schema_names: set[str] | None = None,
 ) -> list[tuple[ResultsSchemaProperties, dict[str, BaseFieldProperties]]]:
     """This functions gets all Results Schema schemas from Benchling and converts them to our internal representation of a schema and its fields.
     It parses the Results Schema and creates ResultsSchemaProperties and a list of FieldProperties for each field in the schema.
+    If include_archived is True, archived schemas and archived fields are included.
+    If wh_schema_names is given, only those schemas are returned.
     """
-    results_schemas = ResultsSchemaModel.get_all(benchling_service)
+    results_schemas = ResultsSchemaModel.get_all(
+        benchling_service, include_archived=include_archived
+    )
+    if wh_schema_names is not None:
+        results_schemas = [
+            s for s in results_schemas if s.systemName in wh_schema_names
+        ]
     dropdown_id_to_name_map = get_benchling_dropdown_id_name_map(benchling_service)
     unit_id_to_name_map = get_unit_id_to_name_map(benchling_service)
     entity_schema_id_to_system_name_map = (
@@ -83,7 +101,7 @@ def get_converted_results_schemas(
         schema_properties = ResultsSchemaProperties(
             name=schema.name,
             warehouse_name=schema.systemName,
-        )
+        ).set_archived(schema.archived)
         field_properties_dict = {}
         for field in schema.fields:
             field_properties_dict[field.systemName] = (

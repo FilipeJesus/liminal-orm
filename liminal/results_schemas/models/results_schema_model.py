@@ -60,6 +60,7 @@ class ResultsSchemaModel(BaseModel):
     def get_all_json(
         cls,
         benchling_service: BenchlingService,
+        include_archived: bool = False,
     ) -> list[dict[str, Any]]:
         """This function gets all results schemas from Benchling's API, returning the raw JSON data.
 
@@ -73,13 +74,14 @@ class ResultsSchemaModel(BaseModel):
         list[dict[str, Any]]
             A list of results schemas, in their raw JSON format.
         """
-        return list_results_schemas_with_fields(benchling_service)
+        return list_results_schemas_with_fields(benchling_service, include_archived)
 
     @classmethod
     def get_all(
         cls,
         benchling_service: BenchlingService,
         wh_schema_names: set[str] | None = None,
+        include_archived: bool = False,
     ) -> list[ResultsSchemaModel]:
         """This function gets all results schemas from Benchling's API.
         If a list of names is provided, the function will only return the results schemas with the given names.
@@ -96,7 +98,7 @@ class ResultsSchemaModel(BaseModel):
         list[ResultsSchemaModel]
             A list of results schema models.
         """
-        schemas_data = cls.get_all_json(benchling_service)
+        schemas_data = cls.get_all_json(benchling_service, include_archived)
         filtered_schemas: list[ResultsSchemaModel] = []
         if wh_schema_names:
             for schema in schemas_data:

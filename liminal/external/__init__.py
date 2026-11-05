@@ -26,6 +26,17 @@ from liminal.entity_schemas.operations import (
     UpdateEntitySchemaField,
     UpdateEntitySchemaNameTemplate,
 )
+from liminal.results_schemas.operations import (
+    ArchiveResultsSchema,
+    ArchiveResultsSchemaField,
+    CreateResultsSchema,
+    CreateResultsSchemaField,
+    ReorderResultsSchemaFields,
+    UnarchiveResultsSchema,
+    UnarchiveResultsSchemaField,
+    UpdateResultsSchema,
+    UpdateResultsSchemaField,
+)
 from liminal.enums import (
     BenchlingEntityType,
     BenchlingFieldType,
