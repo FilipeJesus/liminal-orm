@@ -15,6 +15,7 @@ from liminal.utils import to_module_name, to_python_identifier, to_pascal_case
 def get_entity_mixin(entity_type: BenchlingEntityType) -> str:
     type_to_mixin_map = {
         BenchlingEntityType.ENTRY: "EntryMixin",
+        BenchlingEntityType.CONTAINER: "ContainerMixin",
         BenchlingEntityType.MIXTURE: "MixtureMixin",
         BenchlingEntityType.MOLECULE: "MoleculeMixin",
         BenchlingEntityType.CUSTOM_ENTITY: "CustomEntityMixin",
@@ -38,6 +39,7 @@ def get_file_subdirectory(entity_type: BenchlingEntityType) -> str:
         BenchlingEntityType.RNA_SEQUENCE: "rna_sequences",
         BenchlingEntityType.AA_SEQUENCE: "aa_sequences",
         BenchlingEntityType.ENTRY: "entries",
+        BenchlingEntityType.CONTAINER: "containers",
         BenchlingEntityType.MIXTURE: "mixtures",
         BenchlingEntityType.MOLECULE: "molecules",
     }

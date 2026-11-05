@@ -13,6 +13,7 @@ class BenchlingEntityType(StrEnum):
     ENTRY = "entry"
     MIXTURE = "mixture"
     MOLECULE = "molecule"
+    CONTAINER = "container"
 
     def is_nt_sequence(self) -> bool:
         return self in [

@@ -5,6 +5,7 @@ class BenchlingEntitySchemaEndpointType(StrEnum):
     """This enum represents the different entity schema endpoint types in Benchling."""
 
     AA_SEQUENCE = "aa-sequence-schema"
+    CONTAINER = "container-schema"
     CUSTOM_ENTITY = "custom-entity-schema"
     DNA_OLIGO = "dna-oligo-schema"
     DNA_SEQUENCE = "dna-sequence-schema"

@@ -225,6 +225,7 @@ def map_entity_schema_type_to_entity_type(
         BenchlingEntityTypeName.DNA_OLIGO: BenchlingEntityType.DNA_OLIGO,
         BenchlingEntityTypeName.DNA_SEQUENCE: BenchlingEntityType.DNA_SEQUENCE,
         BenchlingEntityTypeName.ENTRY: BenchlingEntityType.ENTRY,
+        BenchlingEntityTypeName.CONTAINER: BenchlingEntityType.CONTAINER,
         BenchlingEntityTypeName.MIXTURE: BenchlingEntityType.MIXTURE,
         BenchlingEntityTypeName.MOLECULE: BenchlingEntityType.MOLECULE,
         BenchlingEntityTypeName.RNA_OLIGO: BenchlingEntityType.RNA_OLIGO,
@@ -306,6 +307,7 @@ def map_entity_type_to_entity_schema_endpoint(
         BenchlingEntityType.RNA_SEQUENCE: BenchlingEntitySchemaEndpointType.RNA_SEQUENCE,
         BenchlingEntityType.AA_SEQUENCE: BenchlingEntitySchemaEndpointType.AA_SEQUENCE,
         BenchlingEntityType.ENTRY: BenchlingEntitySchemaEndpointType.ENTRY,
+        BenchlingEntityType.CONTAINER: BenchlingEntitySchemaEndpointType.CONTAINER,
         BenchlingEntityType.MIXTURE: BenchlingEntitySchemaEndpointType.MIXTURE,
         BenchlingEntityType.MOLECULE: BenchlingEntitySchemaEndpointType.MOLECULE,
     }
@@ -335,6 +337,7 @@ def map_entity_type_to_valid_field_types(
         ],
         BenchlingEntityType.AA_SEQUENCE: [],
         BenchlingEntityType.ENTRY: [],
+        BenchlingEntityType.CONTAINER: [],
         BenchlingEntityType.MIXTURE: [],
         BenchlingEntityType.MOLECULE: [],
     }

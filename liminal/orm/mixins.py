@@ -2,6 +2,10 @@ from sqlalchemy import DATETIME, Boolean, Numeric, String
 from sqlalchemy import Column as SqlColumn
 
 
+class ContainerMixin:
+    barcode = SqlColumn("barcode$", String, nullable=True)
+
+
 class EntryMixin:
     display_id = SqlColumn("display_id$", String, nullable=True)
     review_completed_at = SqlColumn("review_completed_at$", DATETIME, nullable=True)

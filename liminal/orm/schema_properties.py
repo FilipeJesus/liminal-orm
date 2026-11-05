@@ -70,7 +70,7 @@ class SchemaProperties(BaseSchemaProperties):
     @staticmethod
     def unsupported_schema_properties(entity_type: BenchlingEntityType) -> set[str]:
         """Returns the fields that Benchling does not support for the given entity type."""
-        if entity_type == BenchlingEntityType.ENTRY:
+        if entity_type in (BenchlingEntityType.ENTRY, BenchlingEntityType.CONTAINER):
             return {
                 "naming_strategies",
                 "use_registry_id_as_label",

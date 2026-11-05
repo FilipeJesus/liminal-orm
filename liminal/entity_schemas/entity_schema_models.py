@@ -462,7 +462,8 @@ class NameTemplateInputModel(BaseModel):
 
 class EntitySchemaModel(BaseModel):
     """A pydantic model for an entity schema, as returned by the v3 schema list endpoints.
-    Entry schemas omit most registry-related fields, so those are optional."""
+    Entry schemas omit most registry-related fields, so those are optional.
+    Container schemas have no icon or organization, and their `prefix` is listed as `itemIdPrefix`."""
 
     id: str
     name: str
@@ -473,8 +474,8 @@ class EntitySchemaModel(BaseModel):
     createdAt: str
     modifiedAt: str
     itemIdPrefix: str
-    iconId: str
-    organization: EntitySchemaOrganizationModel
+    iconId: str | None = None
+    organization: EntitySchemaOrganizationModel | None = None
     fieldDefinitions: str
     fields: list[EntitySchemaFieldModel] = []
     containableType: str | None = None
@@ -707,7 +708,7 @@ class EntitySchemaModel(BaseModel):
             "name": self.name,
             "systemName": self.systemName,
             "itemIdPrefix": self.itemIdPrefix,
-            "organizationId": self.organization.id,
+            "organizationId": self.organization.id if self.organization else None,
         }
         return EntitySchemaInputModel.model_construct(
             _fields_set=set(updates.keys()), **{**current_values, **updates}
@@ -730,7 +731,8 @@ class EntitySchemaConstraintInputModel(BaseModel):
 class EntitySchemaInputModel(BaseModel):
     """A pydantic model for the body of the v3 create entity schema endpoints (e.g. POST /api/v3/custom-entity-schema).
     `entity_type` picks the endpoint and is not sent in the body. Registry properties are only set on registry schemas,
-    `showResidues` only on sequence schemas, and the ingredient/component lot properties only on mixture schemas."""
+    `showResidues` only on sequence schemas, and the ingredient/component lot properties only on mixture schemas.
+    Container schemas take their prefix as `prefix` rather than `itemIdPrefix`."""
 
     entity_type: BenchlingEntityType = Field(exclude=True)
     name: str
@@ -748,6 +750,13 @@ class EntitySchemaInputModel(BaseModel):
     allowMeasuredIngredients: bool | None = None
     componentLotTextEnabled: bool | None = None
     componentLotStorageEnabled: bool | None = None
+
+    @model_serializer(mode="wrap")
+    def _serialize(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data = handler(self)
+        if self.entity_type == BenchlingEntityType.CONTAINER and "itemIdPrefix" in data:
+            data["prefix"] = data.pop("itemIdPrefix")
+        return data
 
     @classmethod
     def from_benchling_props(
@@ -773,7 +782,10 @@ class EntitySchemaInputModel(BaseModel):
             A pydantic model for the v3 create entity schema endpoint.
         """
         entity_type = benchling_props.entity_type
-        is_registry_schema = entity_type != BenchlingEntityType.ENTRY
+        is_registry_schema = entity_type not in (
+            BenchlingEntityType.ENTRY,
+            BenchlingEntityType.CONTAINER,
+        )
         # The v3 constraint input has no way to set unique residues, so sequence constraints are dropped here.
         sequence_constraints = {c.value for c in SequenceConstraint}
         # Liminal stores warehouse names, but the API expects field display names.

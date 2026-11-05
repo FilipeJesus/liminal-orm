@@ -5,6 +5,7 @@ class BenchlingEntityTypeName(StrEnum):
     """This enum represents the different entity schema types returned by the v3 API as `__typename`."""
 
     AA_SEQUENCE = "AaSequenceSchema"
+    CONTAINER = "ContainerSchema"
     CUSTOM_ENTITY = "CustomEntitySchema"
     DNA_OLIGO = "DnaOligoSchema"
     DNA_SEQUENCE = "DnaSequenceSchema"

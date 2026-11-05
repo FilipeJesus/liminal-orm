@@ -70,11 +70,16 @@ def _list_entity_schemas_for_endpoint(
     include_archived: bool = False,
 ) -> list[dict[str, Any]]:
     """Fetch all entity schemas, including archived ones, from one v3 schema endpoint."""
-    return list_all_items_v3(
+    schemas = list_all_items_v3(
         benchling_service,
         f"{_entity_schema_specific_api_path(endpoint)}/items",
         include_archived,
     )
+    if endpoint == BenchlingEntitySchemaEndpointType.CONTAINER:
+        # Container schemas name their prefix `prefix`; every other schema type uses `itemIdPrefix`.
+        for schema in schemas:
+            schema.setdefault("itemIdPrefix", schema.pop("prefix", None))
+    return schemas
 
 
 def list_entity_schema_field_definitions(

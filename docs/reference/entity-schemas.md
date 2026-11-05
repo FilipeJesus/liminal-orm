@@ -111,6 +111,9 @@ All Liminal entity schema classes must inherit from one of the mixins in the [mi
 
     The type of entity schema. Type must be one of the values from the [BenchlingEntityType](https://github.com/dynotx/liminal-orm/blob/main/liminal/enums/benchling_entity_type.py) enum.
 
+!!! note
+    Container schemas are defined with `entity_type=BenchlingEntityType.CONTAINER` and the `ContainerMixin`. Like entry schemas, they do not support `naming_strategies`, `use_registry_id_as_label`, `include_registry_id_in_chips`, `constraint_fields` or name templates.
+
 - **naming_strategies: set[BenchlingNamingStrategy] = {BenchlingNamingStrategy.NEW_IDS, BenchlingNamingStrategy.IDS_FROM_NAMES, BenchlingNamingStrategy.REPLACE_NAME_WITH_ID}**
 
     The naming strategies for the entity schema. Must be a set of values from the [BenchlingNamingStrategy](https://github.com/dynotx/liminal-orm/blob/main/liminal/enums/benchling_naming_strategy.py) enum.
